@@ -6,13 +6,13 @@ metadata:
   name: helloworld
   namespace: default
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       run: helloworld
   strategy:
     rollingUpdate:
-      maxSurge: 1
+      maxSurge: 3
       maxUnavailable: 1
     type: RollingUpdate
   template:
@@ -21,10 +21,17 @@ spec:
         run: helloworld
     spec:
       containers:
-      - image: ryutah/python-gke-sample:0.0.1
+      - image: ryutah/python-gke-sample:0.0.2
         name: app
         ports:
         - containerPort: 8080
+          name: httpport
+        readinessProbe:
+          httpGet:
+            path: /
+            port: httpport
+          initialDelaySeconds: 3
+          periodSeconds: 5
 
 ---
 
@@ -43,3 +50,19 @@ spec:
   selector:
     run: helloworld
   type: LoadBalancer
+
+---
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: helloworld
+  namespace: default
+spec:
+  maxReplicas: 5
+  minReplicas: 2
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: helloworld
+  targetCPUUtilizationPercentage: 80

@@ -1,6 +1,6 @@
 import sys
 
-from logging import INFO
+from logging import DEBUG
 from logging import getLogger, StreamHandler
 
 from flask import Flask
@@ -15,7 +15,7 @@ handler = StreamHandler(sys.stdout)
 handler.setFormatter(GlogFormatter())
 logger = getLogger(__name__)
 logger.addHandler(handler)
-logger.setLevel(INFO)
+logger.setLevel(DEBUG)
 
 
 @app.route("/")
