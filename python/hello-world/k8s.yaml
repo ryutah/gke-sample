@@ -53,16 +53,24 @@ spec:
 
 ---
 
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   name: helloworld
   namespace: default
 spec:
-  maxReplicas: 5
   minReplicas: 2
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 80
+  - type: Resource
+    resource:
+      name: memory
+      targetAverageUtilization: 80
   scaleTargetRef:
     apiVersion: extensions/v1beta1
     kind: Deployment
     name: helloworld
-  targetCPUUtilizationPercentage: 80
